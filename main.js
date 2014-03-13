@@ -8,8 +8,17 @@ window.onload = function() {
       var nested_data = d3.nest()
                    .key(function(d) { return d.category} )
                    .entries(rows);
-      d3.select("#employment")
-        .selectAll('g')
+
+      // SVG Viewport selection
+      var employment = d3.select("#employment");
+
+      // Create the scale that we'll use for the axis
+      var axisScale = d3.scale.linear().domain([0, 10]).range([0, 100]);
+
+      // Create the axis
+      var yAxis = d3.svg.axis().orient(['left']).scale(axisScale);
+
+      employment.selectAll('g')
         .data(nested_data)
         .enter()
           .append('g')
@@ -27,6 +36,11 @@ window.onload = function() {
               .attr('height', function(d) { return d.percent_employed * multiplier })
               .attr('y', function(d) { return (100 - +d.percent_employed) * multiplier })
               .style('fill', function(d) { return color(d.category) });
+
+        // Create an SVG group Element for the Axis elements and call the xAxis function
+        var yAxisGroup = employment.append('g')
+                                    .attr('transform', 'translate(20, 0)')
+                                    .call(yAxis);
 
     });
 };
